@@ -2,7 +2,7 @@
 # Multiplex SSH connections to multiple hosts with simultanious input.
 
 # help / usage
-if [[ ( $@ == "" || $@ == "--help") ||  $@ == "-h" ]]
+if [[ $@ == "" || $@ == "-h" || $@ == "--help" ]]
 then 
     echo -e "Multiplex SSH connections to multiple hosts with simultanious input.\n"
     echo "Usage: $0 user@host1 [user@host2 ...]"
@@ -10,18 +10,22 @@ then
     exit 0
 fi 
 
+
+# session name
+SESSION="SSH-MULTIPLEX-$$"
+
 # create first ssh session, detach from it and delete host from list
-tmux new-session -s "SSH-MULTIPLEX-$$" -d "ssh $1 ; read -n 1 -p \"Connection to $1 - Press any key to close...\""
+tmux new-session -s "$SESSION" -d "ssh $1 ; read -n 1 -p \"Connection to $1 - Press any key to close...\""
 shift
 
-# connect the remaining hosts inside the tmux session
+# connect the remaining hosts inside the tmux session and select tiled layout
 for i in $* ; do
-    tmux split-window -t "SSH-MULTIPLEX-$$" -h "ssh $i ; read -n 1 -p \"Connection to $i - Press any key to close...\""
+    tmux split-window -t "$SESSION" "ssh $i ; read -n 1 -p \"Connection to $i - Press any key to close...\""
+    tmux select-layout -t "$SESSION" tiled
 done
 
-# select tiled layout, synchronize the input, disable status bar and attach to the tmux session
-tmux select-layout -t "SSH-MULTIPLEX-$$" tiled
-tmux set-window-option -t "SSH-MULTIPLEX-$$" synchronize-panes on
-tmux set-option -t "SSH-MULTIPLEX-$$" status off
-tmux attach-session -t "SSH-MULTIPLEX-$$"
+# synchronize the input, disable status bar and attach to the tmux session
+tmux set-window-option -t "$SESSION" synchronize-panes on
+tmux set-option -t "$SESSION" status off
+tmux attach-session -t "$SESSION"
 
