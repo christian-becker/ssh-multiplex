@@ -1,9 +1,8 @@
 #!/bin/bash
 # Multiplex SSH connections to multiple hosts with simultanious input.
 
-# help / usage
-if [[ $@ == "" || $@ == "-h" || $@ == "--help" ]]
-then 
+# help / usage - display message if requested, no host or an unsupported option is provided
+if [[ $@ == "-h" || $@ == "--help" || $@ == "" || ${@#-} != $@ ]]; then 
     echo -e "Multiplex SSH connections to multiple hosts with simultanious input.\n"
     echo "Usage: $0 user@host1 [user@host2 ...]"
     echo -e "\nExample: $0 user@host1 user@host2 user@host3 user@host4"
