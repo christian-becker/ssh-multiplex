@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Multiplex SSH connections to multiple hosts with simultanious input.
 # 2023 - Christian Becker - mail@christianbecker.name
 
